@@ -20,13 +20,27 @@ to connect servers.
 
 mycat usage:
 	docker build -t liuxing/mycat .
+	edit the start script startup.sh.
+	USERNAME=root Username of the mycat.You can use "mysql -u -p" to login.
+	PASSWORD=root Password of the mycat.You can use "mysql -u -p" to login.
+	DB_NAME=test  The database you use.Make sure all of then mysql instances(master & slaves) 
+		      have the same database.If not exits create it. 			  
+	MASTER_IP_PORT=192.168.100.7:33306 The ip and port of master server.
+	MASTER_USERNAME=root The username of master server.
+	MASTER_PASSWORD=root The password of slave server.
+	SLAVE_IP_PORT=192.168.100.7:32768,[ip:port] The ip and port of slave server.You also can
+						    add many servers as slave to use a comma.
+	SLAVE_USERNAME=root,[username] The username of slave server.
+	SLAVE_PASSWORD=root,[password] The password of slave server.
+	
+	run the startup.sh script:
 	./startup.sh
 	mysql -uroot -proot -h[your host IP] 
 	use test;
 	select * from t1;
 You'll see 2 records.
 
-Conf file is my_conf in local path.
+Conf file is mycat_conf in local path.
 You should restart docker after change any config files use:
 	docker restart mycat
 See how to config your mycat.

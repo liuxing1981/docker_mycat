@@ -1,6 +1,6 @@
 #!/bin/bash
-docker rmi -f liuxing/mycat 2>/dev/null
-docker build -t liuxing/mycat .
+#docker rmi -f liuxing/mycat 2>/dev/null
+#docker build -t liuxing/mycat .
 docker rm -f mycat 2>/dev/null
 docker run --name mycat -d \
 -v ${PWD}/mycat_conf:/root/mycat/conf \
