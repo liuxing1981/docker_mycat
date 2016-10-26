@@ -3,12 +3,20 @@ First of all you need to install docker.
 
 You should run at least 2 mysql instance firstly for test.
 Two servers are mysql docker image file of replication with GTID.
-	./master.sh
-	./slave.sh [master_ip]
-Both mysql server username is root,and password is root.
+	./master.sh [port default=3306]
+	./slave.sh [master_ip] [master_port default=3306]
+
+You also can start other mysql server as slave just use the same command.
+	./slave.sh [master_ip] [master_port default=3306]
+
+Check if all the servers are booted.
+	docker ps
+
+All mysql server username is root,and password is root.
 You can try 
-	For master:mysql -uroot -proot -h[your host IP] -P33306 
-	For slave: mysql -uroot -proot -h[your host IP] -P33307
+	For master:mysql -uroot -proot -h[your host IP] -P[port]
+	For slave: mysql -uroot -proot -h[your host IP] -P[port]
+to connect servers.
 
 mycat usage:
 	docker build -t liuxing/mycat .

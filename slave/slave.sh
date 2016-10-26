@@ -1,8 +1,21 @@
 #!/bin/bash
+# For start mysql slave.
+# author:liuxing
+# date:2016-10-26
+# usage: ./slave [MASTER_HOST_IP] [MASTER_PORT(default=3306)]
+
+MASTER_HOST=$1
+if [ -z $1 ];then
+	echo "./slave [MASTER_HOST_IP] [MASTER_PORT(default=3306)]"
+	exit
+fi
+
 MASTER_PORT=$2
 if [ -z $2 ];then
 	MASTER_PORT=3306
 fi
+
+#create a random as server-id
 function random()
 {
     min=$1;
@@ -12,14 +25,15 @@ function random()
     echo $retnum;
 }
 id=$(random 1 65535)
+
 container=slave$id
-docker rm -f $container 2>/dev/null 
+docker rm -f $container 2>/dev/null
 SLAVE=$(docker run --name $container \
--p 33307:3306 \
+-P \
 -v ~/docker/$container:/var/lib/mysql \
 -v ${PWD}/init.d:/docker-entrypoint-initdb.d \
 -e MYSQL_ROOT_PASSWORD=root \
--e MASTER_HOST=$1 \
+-e MASTER_HOST=$MASTER_HOST \
 -e MASTER_PORT=$MASTER_PORT \
 -d mysql \
 --character-set-server=utf8mb4 \

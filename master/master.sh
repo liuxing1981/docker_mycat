@@ -1,23 +1,25 @@
 #!/bin/bash
-#usage: ./master.sh [port]
-#ex: ./master.sh 33306
-#start a mysql server as master port=33306
-#by default port=3306
+# For start mysql master.
+# author:liuxing
+# date:2016-10-26
+# usage: ./master [MASTER_PORT(default=3306)]
+# ex: ./master.sh 33306
+# start a mysql server as master port=33306
 
 
 #old_container=$(docker inspect -f '{{.Name}}' $(docker ps -q) | grep master)
 #old_container=${old_container#/*}
 
-port=$1
+MASTER_PORT=$1
 if [ -z $1 ];then
-	port=3306
+	MASTER_PORT=3306
 fi
 
 function random()
 {
     min=$1;
     max=$2-$1;
-    num=$(date +%s+%N);
+    num=$(date +%s%N);
     ((retnum=num%max+min));
     echo $retnum;
 }
@@ -26,7 +28,7 @@ id=$(random 1 65535)
 container=master$id
 #docker rm -f $old_container 2>/dev/null 
 MASTER=$(docker run --name $container \
--p $port:3306 \
+-p $MASTER_PORT:3306 \
 -v ~/docker/$container:/var/lib/mysql \
 -v ${PWD}/init.d:/docker-entrypoint-initdb.d \
 -e MYSQL_ROOT_PASSWORD=root \
@@ -40,9 +42,10 @@ MASTER=$(docker run --name $container \
 --master-info-repository='TABLE' \
 --relay-log-info-repository='TABLE'
 )
-sleep 10
 
-MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $MASTER)
+
+#MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $MASTER)
+#echo MASTER_IP
 
 #docker exec $MASTER mysql -uroot -proot -e "
 #GRANT REPLICATION SLAVE ON *.* to 'slave'@'%' identified by 'centling';
@@ -55,5 +58,4 @@ MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $MASTER)
 #insert into t1 values(2,'master');
 #"
 
-echo $MASTER_IP
 

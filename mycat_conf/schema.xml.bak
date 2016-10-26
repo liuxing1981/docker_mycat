@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
 <!DOCTYPE mycat:schema SYSTEM "schema.dtd">
 <mycat:schema xmlns:mycat="http://io.mycat/">
-	<schema name="test" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn1"></schema>
+	<schema name="${DB_NAME}" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn1"></schema>
 	<!-- <dataNode name="dn1$0-743" dataHost="localhost1" database="db$0-743"/> -->
-	<dataNode name="dn1" dataHost="localhost" database="test"/>
+	<dataNode name="dn1" dataHost="localhost" database="${DB_NAME}"/>
 	<dataHost name="localhost" maxCon="1000" minCon="10" balance="1" writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100" >
 		<heartbeat>select user()</heartbeat>
 		<!-- can have multi write hosts -->
-		<writeHost host="hostM1" url="192.168.100.7:33306" user="root" password="root">
-<readHost host="hostS1" url="192.168.100.7:32768" user="root" password="root"/>
+		<writeHost host="hostM1" url="${MASTER_IP_PORT}" user="${MASTER_USERNAME}" password="${MASTER_PASSWORD}">
 		</writeHost>	
 	</dataHost>
 </mycat:schema>
