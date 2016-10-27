@@ -100,65 +100,88 @@ For slave:
         
 ##Test replication
 * Connect to mycat
-        mysql -uroot -proot -h[your host IP]
-        use test;
-        select * from t1;
-        insert into t1 values (3,'slave');
-        select * from t1;
+
+	mysql -uroot -proot -h[your host IP]
+	use test;
+	select * from t1;
+	insert into t1 values (3,'slave');
+	select * from t1;
+
 Show the result: 
-            1  masert
-            2  master
-            3  slave
+
+	1  masert
+	2  master
+	3  slave
 
 * Connect to master
+
         mysql -uroot -proot -h[your host IP] -P[port]
         use test;
+
         select * from t1;
 Show the result: 
-            1  masert
-            2  master
-            3  slave
+
+	1  masert
+	2  master
+	3  slave
 
 * Connect to slave
-        mysql -uroot -proot -h[your host IP] -P[port]
-        use test;
-        select * from t1;
+
+	mysql -uroot -proot -h[your host IP] -P[port]
+	use test;
+
+	select * from t1;
 Show the result: 
-            1  masert
-            2  master
-            3  slave
+
+	1  masert
+	2  master
+	3  slave
 
 
 ###Test rw-splitting 
 * Stop the replication of slave by
 
-        mysql -uroot -proot -h[your slave IP] -P[port]    
-        stop slave;
+	mysql -uroot -proot -h[your slave IP] -P[port]    
+	stop slave;
+
 * Insert a record in slave.
+
         use test;
         insert into t1 values(4,'rw');
         select * from t1;
+
 Show the result at slave: 
-            1  masert
-            2  master
-            3  slave
-            4  rw
+	
+	1  masert
+	2  master
+	3  slave
+	4  rw
+
 * Connect to mycat
+
         use test;
         select * from t1;
+
 Show the result at mycat: 
-            1  masert
-            2  master
-            3  slave
-            4  rw
+	
+	1  masert
+	2  master
+	3  slave
+	4  rw
+
 * Connect to master
+
         use test;
         select * from t1;
+
 Show the result at master: 
-            1  masert
-            2  master
-            3  slave
+
+	1  masert
+	2  master
+	3  slave
+
 * Recover the replication,connect to slave
+
         start slave;
 
 Conf file is mycat_conf in local path.
