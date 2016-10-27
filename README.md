@@ -100,12 +100,13 @@ For slave:
         
 ##Test replication
 * Connect to mycat
-	mysql -uroot -proot -h[your host IP]
+
+```	mysql -uroot -proot -h[your host IP]
 	use test;
 	select * from t1;
 	insert into t1 values (3,'slave');
 	select * from t1;
-
+```
 Show the result: 
 
 		1  masert
