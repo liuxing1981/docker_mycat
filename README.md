@@ -100,7 +100,6 @@ For slave:
         
 ##Test replication
 * Connect to mycat
-
 	mysql -uroot -proot -h[your host IP]
 	use test;
 	select * from t1;
@@ -109,33 +108,33 @@ For slave:
 
 Show the result: 
 
-	1  masert
-	2  master
-	3  slave
+		1  masert
+		2  master
+		3  slave
 
 * Connect to master
 
         mysql -uroot -proot -h[your host IP] -P[port]
         use test;
-
         select * from t1;
+
 Show the result: 
 
-	1  masert
-	2  master
-	3  slave
+		1  masert
+		2  master
+		3  slave
 
 * Connect to slave
 
 	mysql -uroot -proot -h[your host IP] -P[port]
 	use test;
-
 	select * from t1;
+
 Show the result: 
 
-	1  masert
-	2  master
-	3  slave
+		1  masert
+		2  master
+		3  slave
 
 
 ###Test rw-splitting 
@@ -152,10 +151,10 @@ Show the result:
 
 Show the result at slave: 
 	
-	1  masert
-	2  master
-	3  slave
-	4  rw
+		1  masert
+		2  master
+		3  slave
+		4  rw
 
 * Connect to mycat
 
@@ -164,10 +163,10 @@ Show the result at slave:
 
 Show the result at mycat: 
 	
-	1  masert
-	2  master
-	3  slave
-	4  rw
+		1  masert
+		2  master
+		3  slave
+		4  rw
 
 * Connect to master
 
@@ -176,9 +175,9 @@ Show the result at mycat:
 
 Show the result at master: 
 
-	1  masert
-	2  master
-	3  slave
+		1  masert
+		2  master
+		3  slave
 
 * Recover the replication,connect to slave
 
