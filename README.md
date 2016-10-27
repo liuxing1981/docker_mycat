@@ -6,43 +6,44 @@ First of all you need to install docker.
 You should run at least 2 mysql instance firstly for test.
 Two servers are mysql docker image file of replication with GTID.
 You must enter the directory to run shell script like this:
-
-    cd master
-    ./master.sh [port default=3306]
-    cd slave
-    ./slave.sh [master_ip] [master_port default=3306]
-        
+```
+	cd master
+	./master.sh [port default=3306]
+	cd slave
+	./slave.sh [master_ip] [master_port default=3306]
+```        
 Don't run the script like this:  
-
-    ./master/master.sh
-    
+```
+	./master/master.sh
+```    
 Beacuse you change the value of $PWD implictly.
 
 You also can start other mysql server as slave just use the same command.
-
-    cd slave
-    ./slave.sh [master_ip] [master_port default=3306]
-
+```
+	cd slave
+	./slave.sh [master_ip] [master_port default=3306]
+```
 Check if all the servers are booted.
-
-    docker ps
-
+```
+	docker ps
+```
 All mysql server username is root,and password is root.
 
 You can try to connect servers like this:
 
 For master:
-        
+```
 	mysql -uroot -proot -h[your host IP] -P[port]
-        
+```        
 For slave:
-        
-        mysql -uroot -proot -h[your host IP] -P[port]
-
+```
+	mysql -uroot -proot -h[your host IP] -P[port]
+```
 
 ##Build docker image
-        docker build -t liuxing/mycat .
-        
+```    
+	docker build -t liuxing/mycat .
+```        
 ##Edit the start script startup.sh.
 
 * ####USERNAME
@@ -60,9 +61,9 @@ For slave:
   If you have not created it before,create it before start mycat.
   
   Login to master and use the command as below:
-    
-        create database test;
-  
+  ```
+  	create database test;
+  ```
   If you have done the mysql replication,you need not to create the database on slave servers.
   
   Mysql replication can do the job by synchronizing the data of  master server.
@@ -96,73 +97,102 @@ For slave:
   The password of slave server.ex:SLAVE_PASSWORD=root,scott
 
 ##Startup mycat
-        ./startup.sh
-       
+```    
+	./startup.sh
+```       
 ##Test replication
+
 * Connect to mycat
-        mysql -uroot -proot -h[your host IP]
-        use test;
-        select * from t1;
-        insert into t1 values (3,'slave');
-        select * from t1;
+```
+	mysql -uroot -proot -h[your host IP]
+	use test;
+	select * from t1;
+	insert into t1 values (3,'slave');
+	select * from t1;
+```
 Show the result: 
-            1  masert
-            2  master
-            3  slave
-
+```
+	1  master
+	2  master
+	3  slave
+```
 * Connect to master
-        mysql -uroot -proot -h[your host IP] -P[port]
-        use test;
-        select * from t1;
+```
+	mysql -uroot -proot -h[your host IP] -P[port]
+	use test;
+	select * from t1;
+```
 Show the result: 
-            1  masert
-            2  master
-            3  slave
-
+```            
+	1  master
+	2  master
+	3  slave
+```
 * Connect to slave
-        mysql -uroot -proot -h[your host IP] -P[port]
-        use test;
-        select * from t1;
+```
+	mysql -uroot -proot -h[your host IP] -P[port];
+	use test;
+	select * from t1;
+```    
 Show the result: 
-            1  masert
-            2  master
-            3  slave
+```
+	1  master
+	2  master
+	3  slave
+```
 
+###Test rw-splitting
 
-###Test rw-splitting 
 * Stop the replication of slave by
-
-        mysql -uroot -proot -h[your slave IP] -P[port]    
-        stop slave;
+```
+	mysql -uroot -proot -h[your slave IP] -P[port]
+	stop slave;
+```	
 * Insert a record in slave.
-        use test;
-        insert into t1 values(4,'rw');
-        select * from t1;
+```
+	use test;
+	insert into t1 values(4,'rw');
+	select * from t1;
+```	
 Show the result at slave: 
-            1  masert
-            2  master
-            3  slave
-            4  rw
+```
+	1  master
+	2  master
+	3  slave
+	4  rw
+```
 * Connect to mycat
-        use test;
-        select * from t1;
+```        
+	use test;
+	select * from t1;
+```	
 Show the result at mycat: 
-            1  masert
-            2  master
-            3  slave
-            4  rw
+```
+	1  master
+	2  master
+	3  slave
+	4  rw
+```    
 * Connect to master
-        use test;
-        select * from t1;
+```
+	use test;
+	select * from t1;
+```
 Show the result at master: 
-            1  masert
-            2  master
-            3  slave
+```
+	1  master
+	2  master
+	3  slave
+```
+	    
 * Recover the replication,connect to slave
-        start slave;
-
+```
+	start slave;
+```    
 Conf file is mycat_conf in local path.
 You should restart docker after change any config files use:
-        docker restart mycat
+```        
+	docker restart mycat
+```
 See how to config your mycat.
         http://www.mycat.org.cn/document/Mycat_V1.6.0.pdf 
