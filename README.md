@@ -1,48 +1,168 @@
-This is a docker file for mycat 1.6 release.
+#Docker mycat
+This is a docker image mycat 1.6 release.
 First of all you need to install docker.
+
 
 You should run at least 2 mysql instance firstly for test.
 Two servers are mysql docker image file of replication with GTID.
-	./master.sh [port default=3306]
-	./slave.sh [master_ip] [master_port default=3306]
+You must enter the directory to run shell script like this:
+
+    cd master
+    ./master.sh [port default=3306]
+    cd slave
+    ./slave.sh [master_ip] [master_port default=3306]
+        
+Don't run the script like this:  
+
+    ./master/master.sh
+    
+Beacuse you change the value of $PWD implictly.
 
 You also can start other mysql server as slave just use the same command.
-	./slave.sh [master_ip] [master_port default=3306]
+
+    cd slave
+    ./slave.sh [master_ip] [master_port default=3306]
 
 Check if all the servers are booted.
-	docker ps
+
+    docker ps
 
 All mysql server username is root,and password is root.
-You can try 
-	For master:mysql -uroot -proot -h[your host IP] -P[port]
-	For slave: mysql -uroot -proot -h[your host IP] -P[port]
-to connect servers.
 
-mycat usage:
-	docker build -t liuxing/mycat .
-	edit the start script startup.sh.
-	USERNAME=root Username of the mycat.You can use "mysql -u -p" to login.
-	PASSWORD=root Password of the mycat.You can use "mysql -u -p" to login.
-	DB_NAME=test  The database you use.Make sure all of then mysql instances(master & slaves) 
-		      have the same database.If not exits create it. 			  
-	MASTER_IP_PORT=192.168.100.7:33306 The ip and port of master server.
-	MASTER_USERNAME=root The username of master server.
-	MASTER_PASSWORD=root The password of slave server.
-	SLAVE_IP_PORT=192.168.100.7:32768,[ip:port] The ip and port of slave server.You also can
-						    add many servers as slave to use a comma.
-	SLAVE_USERNAME=root,[username] The username of slave server.
-	SLAVE_PASSWORD=root,[password] The password of slave server.
-	
-	run the startup.sh script:
-	./startup.sh
-	mysql -uroot -proot -h[your host IP] 
-	use test;
-	select * from t1;
-You'll see 2 records.
+You can try to connect servers like this:
+
+For master:
+        
+        mysql -uroot -proot -h[your host IP] -P[port]
+        
+For slave:
+        
+        mysql -uroot -proot -h[your host IP] -P[port]
+
+
+##Build docker image
+        docker build -t liuxing/mycat .
+        
+##Edit the start script startup.sh.
+
+* ####USERNAME
+ 
+  Username of the mycat.You can use "mysql -u -p" to login. ex:USERNAME=root
+
+* ####PASSWORD
+  
+  Password of the mycat.You can use "mysql -u -p" to login.ex:PASSWORD=root
+
+* ####DB_NAME 
+
+  The database you use.Make sure all of then mysql instances(master & slaves) have the same database.
+  
+  If you have not created it before,create it before start mycat.
+  
+  Login to master and use the command as below:
+    
+        create database test;
+  
+  If you have done the mysql replication,you need not to create the database on slave servers.
+  
+  Mysql replication can do the job by synchronizing the data of  master server.
+  
+  ex:DB_NAME=test
+
+* ####MASTER_IP_PORT
+  
+  The ip and port of master server.ex:MASTER_IP_PORT=192.168.100.7:33306
+
+* ####MASTER_USERNAME
+  
+  The username of master server. ex:MASTER_USERNAME=root 
+
+* ####MASTER_PASSWORD
+  
+  The password of slave server.ex:MASTER_PASSWORD=root
+
+* ####SLAVE_IP_PORT
+
+  The ip and port of slave server.You also can add many servers as slave to use a comma.
+  
+  ex:SLAVE_IP_PORT=192.168.100.7:32768,192.168.100.7:32767 
+
+* ####SLAVE_USERNAME
+
+  The username of slave server.ex:SLAVE_USERNAME=root,tiger
+
+* ####SLAVE_PASSWORD
+
+  The password of slave server.ex:SLAVE_PASSWORD=root,scott
+
+##Startup mycat
+        ./startup.sh
+        
+##Test replication
+* Connect to mycat
+        mysql -uroot -proot -h[your host IP]
+        use test;
+        select * from t1;
+        insert into t1 values (3,'slave');
+        select * from t1;
+Show the result: 
+            1  masert
+            2  master
+            3  slave
+
+* Connect to master
+        mysql -uroot -proot -h[your host IP] -P[port]
+        use test;
+        select * from t1;
+Show the result: 
+            1  masert
+            2  master
+            3  slave
+
+* Connect to slave
+        mysql -uroot -proot -h[your host IP] -P[port]
+        use test;
+        select * from t1;
+Show the result: 
+            1  masert
+            2  master
+            3  slave
+
+
+###Test rw-splitting 
+* Stop the replication of slave by
+
+        mysql -uroot -proot -h[your slave IP] -P[port]    
+        stop slave;
+* Insert a record in slave.
+        use test;
+        insert into t1 values(4,'rw');
+        select * from t1;
+Show the result at slave: 
+            1  masert
+            2  master
+            3  slave
+            4  rw
+* Connect to mycat
+        use test;
+        select * from t1;
+Show the result at mycat: 
+            1  masert
+            2  master
+            3  slave
+            4  rw
+* Connect to master
+        use test;
+        select * from t1;
+Show the result at master: 
+            1  masert
+            2  master
+            3  slave
+* Recover the replication,connect to slave
+        start slave;
 
 Conf file is mycat_conf in local path.
 You should restart docker after change any config files use:
-	docker restart mycat
+        docker restart mycat
 See how to config your mycat.
-	http://www.mycat.org.cn/document/Mycat_V1.6.0.pdf
-	
+        http://www.mycat.org.cn/document/Mycat_V1.6.0.pdf
