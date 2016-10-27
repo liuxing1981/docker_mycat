@@ -104,7 +104,7 @@ For slave:
 
 * Connect to mycat
 ```
-	mysql -uroot -proot -h[your host IP]
+	mysql -uroot -proot -h[your mycat IP] -P[port]
 	use test;
 	select * from t1;
 	insert into t1 values (3,'slave');
@@ -118,7 +118,7 @@ Show the result:
 ```
 * Connect to master
 ```
-	mysql -uroot -proot -h[your host IP] -P[port]
+	mysql -uroot -proot -h[your master IP] -P[port]
 	use test;
 	select * from t1;
 ```
@@ -130,7 +130,7 @@ Show the result:
 ```
 * Connect to slave
 ```
-	mysql -uroot -proot -h[your host IP] -P[port];
+	mysql -uroot -proot -h[your slave IP] -P[port];
 	use test;
 	select * from t1;
 ```    
@@ -148,33 +148,23 @@ Show the result:
 	mysql -uroot -proot -h[your slave IP] -P[port]
 	stop slave;
 ```	
-* Insert a record in slave.
+* Insert a record in mycat.
 ```
+	mysql -uroot -proot -h[your mycat IP] -P[port]
 	use test;
 	insert into t1 values(4,'rw');
 	select * from t1;
-```	
-Show the result at slave: 
+```
+The record is written to master by mycat.So you can't see the record from slave.
+Both mycat and slave has the same result: 
 ```
 	1  master
 	2  master
 	3  slave
-	4  rw
-```
-* Connect to mycat
-```        
-	use test;
-	select * from t1;
-```	
-Show the result at mycat: 
-```
-	1  master
-	2  master
-	3  slave
-	4  rw
-```    
+``` 
 * Connect to master
 ```
+	mysql -uroot -proot -h[your master IP] -P[port]
 	use test;
 	select * from t1;
 ```
@@ -183,12 +173,26 @@ Show the result at master:
 	1  master
 	2  master
 	3  slave
+	4  rw
 ```
 	    
 * Recover the replication,connect to slave
 ```
+	mysql -uroot -proot -h[your slave IP] -P[port]
 	start slave;
-```    
+```
+The slave server will compelete the replication automaticly from master when slave server is restarted.
+So you try to run at slave server.
+```	
+	select * from t1;
+```
+Show the result at slave: 
+```
+	1  master
+	2  master
+	3  slave
+	4  rw
+```
 Conf file is mycat_conf in local path.
 You should restart docker after change any config files use:
 ```        
