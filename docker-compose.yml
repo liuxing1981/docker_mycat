@@ -1,0 +1,54 @@
+version: '2'
+services:
+    master:
+        image: mysql
+        container_name: master
+        restart: always
+        ports:
+            - 3306
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        volumes: 
+            - ~/docker/mysql/master:/var/lib/mysql
+            - ${PWD}/master/init.d:/docker-entrypoint-initdb.d
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --server-id=1 --log-bin=mysql-bin --gtid-mode=ON --enforce-gtid-consistency --master-info-repository=TABLE --relay-log-info-repository=TABLE
+    slave:
+        image: mysql
+        container_name: slave
+        restart: always
+        ports:
+            - 3306
+        links: 
+            - master
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MASTER_HOST: master
+            MASTER_PORT: 3306
+        volumes:
+            - ~/docker/mysql/slave:/var/lib/mysql
+            - ${PWD}/slave/init.d:/docker-entrypoint-initdb.d
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --server-id=2 --log-bin=mysql-bin --gtid-mode=ON --enforce-gtid-consistency --master-info-repository=TABLE --relay-log-info-repository=TABLE --relay-log=slave-2-relay-bin --relay-log-index=slave-2-relay-bin.index
+    mycat:
+        build: ./
+        container_name: mycat
+        restart: always
+        ports:
+            - 8066
+        links:
+            - master
+            - slave
+        environment:
+            USERNAME: root
+            PASSWORD: root
+            DB_NAME: test
+            MASTER_IP_PORT: master:3306
+            MASTER_USERNAME: root
+            MASTER_PASSWORD: root
+            SLAVE_IP_PORT: slave:3306
+            SLAVE_USERNAME: root
+            SLAVE_PASSWORD: root
+        volumes:
+            - ${PWD}/mycat_conf:/root/mycat/conf
+        depends_on:
+            - master
+            - slave
