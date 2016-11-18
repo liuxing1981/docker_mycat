@@ -39,8 +39,8 @@ MASTER=$(docker run --name $container \
 --log-bin=mysql-bin \
 --gtid-mode=ON \
 --enforce-gtid-consistency \
---master-info-repository='TABLE' \
---relay-log-info-repository='TABLE'
+--master-info-repository=TABLE \
+--relay-log-info-repository=TABLE
 )
 
 

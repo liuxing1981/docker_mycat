@@ -2,6 +2,23 @@
 This is a docker image mycat 1.6 release.
 First of all you need to install docker.
 
+##Quickstart
+```
+        docker-compose up -d
+```
+For use this command,you should install docker-compose fisrt,use:
+```
+        curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+```
+Test the installaton:
+```
+        $ docker-compose --version
+          docker-compose version: 1.9.0
+```
+Note:If you have installed docker-compose already,make sure docker-compose version is higher than 1.6,which can support "v2" version in docker-compose.yml
+
+
 
 You should run at least 2 mysql instance firstly for test.
 Two servers are mysql docker image file of replication with GTID.
