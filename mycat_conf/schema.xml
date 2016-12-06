@@ -7,8 +7,8 @@
 	<dataHost name="localhost" maxCon="1000" minCon="10" balance="1" writeType="0" dbType="mysql" dbDriver="native" switchType="-1" slaveThreshold="100" >
 		<heartbeat>select user()</heartbeat>
 		<!-- can have multi write hosts -->
-		<writeHost host="hostM1" url="master:3306" user="root" password="root">
+		<writeHost host="hostM1" url="master:3306" user="writer" password="centling">
 		</writeHost>	
-<writeHost host="hostS1" url="slave:3306" user="root" password="root"/>
+<writeHost host="hostS1" url="slave:3306" user="reader" password="centling"/>
 	</dataHost>
 </mycat:schema>

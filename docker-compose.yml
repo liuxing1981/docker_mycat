@@ -8,6 +8,9 @@ services:
             - 3306
         environment:
             MYSQL_ROOT_PASSWORD: root
+            MASTER_USERNAME: writer
+            MASTER_PASSWORD: centling
+            DB_NAME: test
         volumes: 
             - ~/docker/mysql/master:/var/lib/mysql
             - ${PWD}/master/init.d:/docker-entrypoint-initdb.d
@@ -24,6 +27,9 @@ services:
             MYSQL_ROOT_PASSWORD: root
             MASTER_HOST: master
             MASTER_PORT: 3306
+            SLAVE_USERNAME: reader
+            SLAVE_PASSWORD: centling
+            DB_NAME: test
         volumes:
             - ~/docker/mysql/slave:/var/lib/mysql
             - ${PWD}/slave/init.d:/docker-entrypoint-initdb.d
@@ -42,11 +48,11 @@ services:
             PASSWORD: root
             DB_NAME: test
             MASTER_IP_PORT: master:3306
-            MASTER_USERNAME: root
-            MASTER_PASSWORD: root
+            MASTER_USERNAME: writer
+            MASTER_PASSWORD: centling
             SLAVE_IP_PORT: slave:3306
-            SLAVE_USERNAME: root
-            SLAVE_PASSWORD: root
+            SLAVE_USERNAME: reader
+            SLAVE_PASSWORD: centling
         volumes:
             - ${PWD}/mycat_conf:/root/mycat/conf
         depends_on:

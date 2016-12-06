@@ -9,4 +9,5 @@ master_user='slave',
 master_password='centling',
 MASTER_AUTO_POSITION=1;
 start slave;
+GRANT SELECT ON *.* to '$SLAVE_USERNAME'@'%' identified by '$SLAVE_PASSWORD';
 "
