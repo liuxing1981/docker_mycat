@@ -13,7 +13,8 @@ sed -i \
     -e "s/\${MASTER_PASSWORD}/$MASTER_PASSWORD/g" \
  ${MYCAT_HOME}/conf/schema.xml
 for i in $(seq $[${#SERVER[*]}-1] -1 0);do
-    sed -i "/<writeHost /a <readHost host=\"hostS$[i+1]\" url=\"${SERVER[$i]}\" user=\"${SLAVE_USERNAMES[$i]}\" password=\"${SLAVE_PASSWORDS[$i]}\"/>"  ${MYCAT_HOME}/conf/schema.xml
+    #sed -i "/<writeHost /a <readHost host=\"hostS$[i+1]\" url=\"${SERVER[$i]}\" user=\"${SLAVE_USERNAMES[$i]}\" password=\"${SLAVE_PASSWORDS[$i]}\"/>"  ${MYCAT_HOME}/conf/schema.xml
+    sed -i "/<\/writeHost/a <writeHost host=\"hostS$[i+1]\" url=\"${SERVER[$i]}\" user=\"${SLAVE_USERNAMES[$i]}\" password=\"${SLAVE_PASSWORDS[$i]}\"/>"  ${MYCAT_HOME}/conf/schema.xml
 done;
 cp ${MYCAT_HOME}/conf/server.xml.bak ${MYCAT_HOME}/conf/server.xml
 sed -i \
